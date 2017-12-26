@@ -1,6 +1,7 @@
 import requests
 import api_keys
 
+station_id_cache = {}
 
 def get_departures(from_station="Vårdcentralen (Värmdö)",
                    end_station="Slussen"):
@@ -15,13 +16,14 @@ def get_departures(from_station="Vårdcentralen (Värmdö)",
     get_data = requests.get(get_url)
     js = get_data.json()
     if get_data.status_code == 200:
-        return js["Trip"][0]["LegList"]["Leg"][0]
+        return js["Trip"]
     else:
         raise Exception(js)
 
 
-
-def get_station_id(station_name):
+def get_station_id(station_name, cache=station_id_cache):
+    if station_name in cache:
+        return cache[station_name]
     parameters = {
         "searchstring" : station_name,
         "stationsonly" : True,
@@ -31,7 +33,9 @@ def get_station_id(station_name):
     get_data = requests.get(get_url)
     js = get_data.json()
     if get_data.status_code == 200:
-        return js["ResponseData"][0]["SiteId"]
+        station_id = js["ResponseData"][0]["SiteId"]
+        cache[station_name] = station_id
+        return station_id
     else:
         raise Exception(js)
 
