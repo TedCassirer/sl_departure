@@ -12,10 +12,11 @@ def get_departures(from_station="Vårdcentralen (Värmdö)",
         "searchForArrival" : 0,
         "maxChange" : 0,
     }
-    get_url = "http://api.sl.se/api2/TravelplannerV3/trip.json?" + get_parameter_string(parameters)
+    get_url = "http://api.sl.se/api2/TravelplannerV3/trip.json?" + \
+              get_parameter_string(parameters)
     get_data = requests.get(get_url)
     js = get_data.json()
-    if get_data.status_code == 200:
+    if get_data.status_code == 200 and "Trip" in js:
         return js["Trip"]
     else:
         raise Exception(js)
